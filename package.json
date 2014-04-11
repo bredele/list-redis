@@ -1,0 +1,28 @@
+{
+  "name": "list-redis",
+  "version": "0.0.0",
+  "description": "A redis queue object",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bredele/list-redis.git"
+  },
+  "keywords": [
+    "redis",
+    "datastore",
+    "hash",
+    "node"
+  ],
+  "author": "Olivier Wietrich <olivier.wietrich@gmail.com> (http://github.com/bredele)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bredele/list-redis/issues"
+  },
+  "homepage": "https://github.com/bredele/list-redis"
+}
