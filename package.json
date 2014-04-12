@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --reporter nyan"
   },
   "repository": {
     "type": "git",
@@ -24,5 +24,13 @@
   "bugs": {
     "url": "https://github.com/bredele/list-redis/issues"
   },
-  "homepage": "https://github.com/bredele/list-redis"
+  "homepage": "https://github.com/bredele/list-redis",
+  "dependencies": {
+    "bredele-promise": "^0.1.0",
+    "datastore": "^1.0.1",
+    "redis": "^0.10.1"
+  },
+  "devDependencies": {
+    "mocha": "^1.18.2"
+  }
 }
