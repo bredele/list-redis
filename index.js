@@ -22,7 +22,7 @@ module.exports = List;
 
 function List(name) {
   if(!(this instanceof List)) return new List(name);
-  //will need to pass options to set client
+  // will need to pass options to set client
   this.client = client();
   this.name = name;
 }
@@ -47,18 +47,47 @@ List.prototype.incr = function() {
 };
 
 
-List.prototype.hash = function() {
-  
+/**
+ * Flatten object.
+ * 
+ * Examples:
+ *
+ *   flatten({
+ *     repo: 'roach',
+ *     type: 'github'
+ *   });
+ *   // => ['repo', 'github', 'type', 'github']
+ *   
+ * @param  {Object} obj 
+ * @return {Array}
+ * @api private
+ */
+
+function flatten(name, id, obj) {
+  var arr = [name + ':' + id];
+  for(var key in obj) {
+    arr.push(key, obj[key]);
+  }
+  return arr;
+}
+
+
+List.prototype.hash = function(id, data) {
+  if(typeof data === 'object') {
+    this.client.hmset(flatten(this.name, id, data));
+  }
 };
 
+
 List.prototype.add = function(data, cb) {
-  if(typeof data === 'function') {
-    cb = data;
-    data = null;
-  }
+  if(typeof data === 'function') cb = data;
   this.incr()
     .then(function(id) {
-      if(data) this.hash();
+      // we don't care if hash didn't work
+      this.hash(id, data);
+      this.client.zadd(this.name, id, id, function(err, res) {
+        cb(err, id);
+      });
     }.bind(this), cb);
 };
 
