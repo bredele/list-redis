@@ -32,12 +32,17 @@ describe('list', function() {
 			assert(queue.push);
 		});
 
-		it('should have a range handler', function() {
-			assert(queue.range);
-		});
+		// it('should have a range handler', function() {
+		// 	assert(queue.range);
+		// });
 
 		it('should have a has handler', function() {
 			assert(queue.has);
+		});
+
+
+		it('should have a hash handler', function() {
+			assert(queue.hash);
 		});
 
 	});
@@ -124,4 +129,12 @@ describe('list', function() {
 
 	});
 
+
+	describe('push', function() {
+
+		it('', function(done) {
+
+		});
+
+	});
 });

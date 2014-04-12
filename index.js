@@ -98,7 +98,7 @@ function is(data, type) {
  * @api private
  */
 
-List.prototype.hash = function(id, data) {
+List.prototype.hmset = function(id, data) {
   var promise = new Promise();
   if(is(data,'object')) {
     this.client.hmset(flatten(this.name, id, data), function(err) {
@@ -134,7 +134,7 @@ List.prototype.add = function(data, cb) {
   this.incr()
     .then(function(id) {
       // we don't care if hash didn't work
-      this.hash(id, data);
+      this.hmset(id, data);
       this.client.zadd(this.name, id, id, function(err, res) {
         cb(err, id);
       });
@@ -216,11 +216,13 @@ List.prototype.get = function(id, cb) {
 };
 
 
-List.prototype.range = function() {
-  
+
+List.prototype.hash = function() {
+  //update options
 };
 
 
-List.prototype.push = function() {
+
+List.prototype.push = function(id, list, cb) {
   
 };
