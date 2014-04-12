@@ -27,6 +27,7 @@
   "homepage": "https://github.com/bredele/list-redis",
   "dependencies": {
     "bredele-promise": "^0.1.0",
+    "hiredis": "^0.1.16",
     "redis": "^0.10.1"
   },
   "devDependencies": {
