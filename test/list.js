@@ -99,7 +99,7 @@ describe('list', function() {
 			});
 		});
 
-		it('should delete hashes', function(done) {
+		it('should delete hash', function(done) {
 			queue.add({
 				name: 'hello'
 			}, function(err, id) {
@@ -110,6 +110,18 @@ describe('list', function() {
 				});
 			});
 		});
+	});
+
+	describe('has', function() {
+
+		it('should return true if exists', function(done) {
+			queue.add(function(err, id) {
+				queue.has(id, function(err, bool) {
+					if(bool) done();
+				});
+			});
+		});
+
 	});
 
 });

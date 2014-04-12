@@ -142,8 +142,26 @@ List.prototype.add = function(data, cb) {
 };
 
 
+/**
+ * Remove id from list.
+ *
+ * If second argument is true, it also
+ * deletes hash options (if exists).
+ *
+ * Examples:
+ *
+ *   list.del(12, cb);
+ *   list.del(13, true, cb);
+ * 
+ * @param  {Integer}   id [description]
+ * @param  {Function | Boolean} cb optional
+ * @param  {Function} fn optional
+ * @api public
+ */
+
 List.prototype.del = function(id, cb, fn) {
   var erase = false;
+  // NOTE: you could do better than that
   if(is(cb,'boolean')) {
     erase = cb;
   } else {
@@ -156,9 +174,26 @@ List.prototype.del = function(id, cb, fn) {
 };
 
 
-List.prototype.has = function() {
-  
+/**
+ * Check if id exists in list.
+ *
+ * Example:
+ *
+ *   list.has(12, function(err, bool) {
+ *     // bool true if exists
+ *   });
+ *   
+ * @param  {Integer}   id 
+ * @param  {Function} cb
+ * @api public
+ */
+
+List.prototype.has = function(id, cb) {
+  this.client.zrank(this.name, id, function(err, res) {
+    cb(err, !!res);
+  });
 };
+
 
 /**
  * Get options for given id.
