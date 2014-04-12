@@ -77,3 +77,14 @@ queue.del(12, true, function(err) {
   //do something
 });
 ``` 
+
+### .move(id, list, callback)
+
+  Atomically removes the set of the list stored at source, and pushes the set to the list stored at destination.
+
+```js
+var other = list('otherList');
+queue.move(12, other, function(){
+  //do something optional
+});
+```
