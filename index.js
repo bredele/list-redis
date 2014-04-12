@@ -72,6 +72,21 @@ function flatten(name, id, obj) {
 
 
 /**
+ * Is type of.
+ * 
+ * @param  {Any}  data 
+ * @param  {String}  type 
+ * @return {Boolean}
+ * @api private
+ */
+
+function is(data, type) {
+  //NOTE: may be use library
+  return (typeof data === type);
+}
+
+
+/**
  * Hash options into hash keys
  * 
  * Hashes are identified with the 
@@ -85,7 +100,7 @@ function flatten(name, id, obj) {
 
 List.prototype.hash = function(id, data) {
   var promise = new Promise();
-  if(typeof data === 'object') {
+  if(is(data,'object')) {
     this.client.hmset(flatten(this.name, id, data), function(err) {
       if(err) promise.reject(err);
       promise.resolve();
@@ -100,6 +115,14 @@ List.prototype.hash = function(id, data) {
  *
  * Generate a uniq id and hashes options
  * if passed.
+ *
+ * Examples:
+ *
+ *  list.add(cb);
+ *  
+ *  list.add({
+ *    name: 'bredele'
+ *  }, cb);
  * 
  * @param {Object | Function} data
  * @param {Function} cb
@@ -107,7 +130,7 @@ List.prototype.hash = function(id, data) {
  */
 
 List.prototype.add = function(data, cb) {
-  if(typeof data === 'function') cb = data;
+  if(is(data,'function')) cb = data;
   this.incr()
     .then(function(id) {
       // we don't care if hash didn't work
@@ -119,9 +142,19 @@ List.prototype.add = function(data, cb) {
 };
 
 
-List.prototype.del = function(id, cb) {
-  this.client.zrem(this.name, id, cb);
+List.prototype.del = function(id, cb, fn) {
+  var erase = false;
+  if(is(cb,'boolean')) {
+    erase = cb;
+  } else {
+    fn = cb;
+  }
+  this.client.zrem(this.name, id, function(err, res) {
+    if(erase) this.client.del(this.name + ':' + id);
+    fn(err, res);
+  }.bind(this));
 };
+
 
 List.prototype.has = function() {
   
@@ -132,6 +165,10 @@ List.prototype.has = function() {
  *
  * Hashes can exist even if id is
  * not in the list.
+ *
+ * Examples:
+ *
+ *  list.get(12, cb);
  * 
  * @param  {Integer} id
  * @param  {Function} cb

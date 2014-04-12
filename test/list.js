@@ -100,10 +100,12 @@ describe('list', function() {
 		});
 
 		it('should delete hashes', function(done) {
-			queue.add(function(err, id) {
+			queue.add({
+				name: 'hello'
+			}, function(err, id) {
 				queue.del(id, true, function(err) {
 					client.hgetall('list:test:' + id, function(err, res) {
-						console.log(arguments);
+						if(!res) done();
 					});
 				});
 			});
