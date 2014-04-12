@@ -29,6 +29,13 @@ function List(name) {
 
 
 
+/**
+ * Increment id key in order to always 
+ * get a uniq id.
+ * 
+ * @return {Promise}
+ * @api private
+ */
 
 List.prototype.incr = function() {
   var promise = new Promise();
@@ -39,30 +46,37 @@ List.prototype.incr = function() {
   return promise;
 };
 
+
 List.prototype.hash = function() {
   
 };
 
 List.prototype.add = function(data, cb) {
-  if(typeof data === 'function') cb = data;
-  //do wee need to client and name?
+  if(typeof data === 'function') {
+    cb = data;
+    data = null;
+  }
   this.incr()
     .then(function(id) {
-
-    }, cb);
+      if(data) this.hash();
+    }.bind(this), cb);
 };
+
 
 List.prototype.del = function() {
   
 };
 
+
 List.prototype.get = function() {
   
 };
 
+
 List.prototype.range = function() {
   
 };
+
 
 List.prototype.push = function() {
   
