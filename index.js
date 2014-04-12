@@ -72,12 +72,35 @@ function flatten(name, id, obj) {
 }
 
 
+/**
+ * Hash options into hash keys
+ * 
+ * Hashes are identified with the 
+ * list name suffixed by ':' and 
+ * the id.
+ * 
+ * @param  {Integer} id
+ * @param  {Object} data 
+ * @api private
+ */
+
 List.prototype.hash = function(id, data) {
   if(typeof data === 'object') {
     this.client.hmset(flatten(this.name, id, data));
   }
 };
 
+
+/**
+ * Add item into the list.
+ *
+ * Generate a uniq id and hashes options
+ * if passed.
+ * 
+ * @param {Object | Function} data
+ * @param {Function} cb
+ * @api public
+ */
 
 List.prototype.add = function(data, cb) {
   if(typeof data === 'function') cb = data;
