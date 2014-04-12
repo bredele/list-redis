@@ -36,6 +36,10 @@ describe('list', function() {
 			assert(queue.range);
 		});
 
+		it('should have a has handler', function() {
+			assert(queue.has);
+		});
+
 	});
 
 	describe('add', function() {

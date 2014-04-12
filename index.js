@@ -4,7 +4,6 @@
  * @api private
  */
 
-var Store = require('datastore');
 var client = require('redis').createClient;
 var Promise = require('bredele-promise');
 
@@ -124,8 +123,20 @@ List.prototype.del = function() {
   
 };
 
+List.prototype.has = function() {
+  
+};
+
+/**
+ * Get options for given id.
+ * 
+ * @param  {Integer} id
+ * @param  {Function} cb
+ * @api public
+ */
 
 List.prototype.get = function(id, cb) {
+  //NOTE: should we check if in list?
   this.client.hgetall(this.name + ':' + id, cb);
 };
 
