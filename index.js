@@ -40,7 +40,7 @@ function List(name) {
 List.prototype.incr = function() {
   var promise = new Promise();
   this.client.incr(this.name + ':id', function(err, res) {
-    if(err) promise.reject("an id can't be assigned");
+    if(err) promise.reject(err);
     promise.resolve(res);
   });
   return promise;
@@ -85,9 +85,14 @@ function flatten(name, id, obj) {
  */
 
 List.prototype.hash = function(id, data) {
+  var promise = new Promise();
   if(typeof data === 'object') {
-    this.client.hmset(flatten(this.name, id, data));
+    this.client.hmset(flatten(this.name, id, data), function(err) {
+      if(err) promise.reject(err);
+      promise.resolve();
+    });
   }
+  return promise;
 };
 
 
@@ -120,8 +125,8 @@ List.prototype.del = function() {
 };
 
 
-List.prototype.get = function() {
-  
+List.prototype.get = function(id, cb) {
+  this.client.hgetall(this.name + ':' + id, cb);
 };
 
 

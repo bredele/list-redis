@@ -54,16 +54,30 @@ describe('list', function() {
 			});
 		});
 
-		it('should set options into id hash fields', function() {
+		it('should set options into id hash fields', function(done) {
 			queue.add({
 				name: 'redis'
 			}, function(err, id) {
 				client.hgetall('list:test:' + id, function(err, res) {
-					console.log(res);
+					if(res.name === 'redis') done();
 				});
 			});
 		});
 		
+	});
+
+	describe('get', function() {
+
+		it('should return options if exists in list', function(done) {
+			queue.add({
+				name: 'bredele'
+			}, function(err, id) {
+				queue.get(id, function(err, data) {
+					if(!err && data.name === 'bredele') done();
+				});
+			});
+		});
+
 	});
 
 });
