@@ -60,7 +60,7 @@ queue.has(12, function(err, exists) {
 });
 ```
 
-### .get(id, callback)
+### .del(id, callback)
 
   Delete list set.
 

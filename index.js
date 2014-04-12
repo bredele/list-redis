@@ -7,6 +7,7 @@
 var client = require('redis').createClient;
 var Promise = require('bredele-promise');
 
+
 /**
  * Expose 'list'
  */
@@ -15,7 +16,16 @@ module.exports = List;
 
 
 /**
- * list constructor.
+ * List contructor.
+ *
+ * Initialize a list in redis with
+ * the given name.
+ *
+ * Examples:
+ *
+ *   list = require('list')('mylist');
+ *
+ * @param {String} name
  * @api public
  */
 
@@ -48,14 +58,6 @@ List.prototype.incr = function() {
 
 /**
  * Flatten object.
- * 
- * Examples:
- *
- *   flatten({
- *     repo: 'roach',
- *     type: 'github'
- *   });
- *   // => ['repo', 'github', 'type', 'github']
  *   
  * @param  {Object} obj 
  * @return {Array}
@@ -111,16 +113,29 @@ List.prototype.hmset = function(id, data) {
 
 
 /**
- * Add item into the list.
+ * Add set in list.
+ * 
+ * @param {Integer}   id 
+ * @param {Function} cb
+ * @api private
+ */
+
+List.prototype.add = function(id, cb) {
+  this.client.zadd(this.name, id, id, cb);
+};
+
+
+/**
+ * Push item into the list.
  *
  * Generate a uniq id and hashes options
  * if passed.
  *
  * Examples:
  *
- *  list.add(cb);
+ *  list.push(cb);
  *  
- *  list.add({
+ *  list.push({
  *    name: 'bredele'
  *  }, cb);
  * 
@@ -129,13 +144,13 @@ List.prototype.hmset = function(id, data) {
  * @api public
  */
 
-List.prototype.add = function(data, cb) {
+List.prototype.push = function(data, cb) {
   if(is(data,'function')) cb = data;
   this.incr()
     .then(function(id) {
       // we don't care if hash didn't work
       this.hmset(id, data);
-      this.client.zadd(this.name, id, id, function(err, res) {
+      this.add(id, function(err) {
         cb(err, id);
       });
     }.bind(this), cb);
@@ -177,7 +192,7 @@ List.prototype.del = function(id, cb, fn) {
 /**
  * Check if id exists in list.
  *
- * Example:
+ * Examples:
  *
  *   list.has(12, function(err, bool) {
  *     // bool true if exists
@@ -190,7 +205,7 @@ List.prototype.del = function(id, cb, fn) {
 
 List.prototype.has = function(id, cb) {
   this.client.zrank(this.name, id, function(err, res) {
-    cb(err, !!res);
+    cb(err, res);
   });
 };
 
@@ -222,7 +237,25 @@ List.prototype.hash = function() {
 };
 
 
+/**
+ * Move set into an other list.
+ *
+ * Atomically removes the set of the list
+ * stored at source, and pushes the set to
+ * the list stored at destination.
+ *
+ * Examples:
+ *
+ *   list.move(12, otherList, cb);
+ * 
+ * @param  {Integer}   id 
+ * @param  {List}   list 
+ * @param  {Function} cb
+ * @api public
+ */
 
-List.prototype.push = function(id, list, cb) {
-  
+List.prototype.move = function(id, list, cb) {
+  this.del(id, function(err) {
+    if(!err) list.add(id, cb);
+  }.bind(this));
 };
