@@ -119,8 +119,8 @@ List.prototype.add = function(data, cb) {
 };
 
 
-List.prototype.del = function() {
-  //boolean to remove hashes as well
+List.prototype.del = function(id, cb) {
+  this.client.zrem(this.name, id, cb);
 };
 
 List.prototype.has = function() {

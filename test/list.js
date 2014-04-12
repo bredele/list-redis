@@ -84,4 +84,20 @@ describe('list', function() {
 
 	});
 
+	describe('del', function() {
+		
+		it('should remove from list', function(done) {
+			// note: it could be great to extend mocha
+			// to avoir cascading, a test could depend of an 
+			// asynchronous result.
+			queue.add(function(err, id) {
+				queue.del(id, function(err) {
+					client.zrank('list:test', id, function(err, res) {
+						if(!res) done();
+					});
+				});
+			});
+		});
+	});
+
 });
