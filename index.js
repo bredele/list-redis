@@ -120,7 +120,7 @@ List.prototype.add = function(data, cb) {
 
 
 List.prototype.del = function() {
-  
+  //boolean to remove hashes as well
 };
 
 List.prototype.has = function() {
@@ -129,6 +129,9 @@ List.prototype.has = function() {
 
 /**
  * Get options for given id.
+ *
+ * Hashes can exist even if id is
+ * not in the list.
  * 
  * @param  {Integer} id
  * @param  {Function} cb
