@@ -5,6 +5,8 @@
  */
 
 var client = require('redis').createClient;
+var co = require('co');
+var thunk = require('thunkify');
 var Promise = require('bredele-promise');
 
 

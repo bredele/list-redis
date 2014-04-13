@@ -6,6 +6,11 @@
 var list = require('..');
 var assert = require('assert');
 var client = require('redis').createClient();
+var co = require('co');
+var thunk = require('thunkify');
+
+client.zrank = thunk(client.zrank);
+client.hgetall = thunk(client.hgetall);
 
 describe('list', function() {
 
@@ -50,27 +55,28 @@ describe('list', function() {
   describe('push', function() {
 
     it('should generate uniq id', function(done) {
-      queue.push(function(err, id) {
-        if(id) done();
-      });
+      co(function *(){
+        var res = yield queue.push();
+        if(res) done();
+      })();
     });
 
     it('should push id into a redis queue', function(done) {
-      queue.push(function(err, id) {
-        client.zrank('list:test', id, function(err, res) {
-          if(res) done();
-        });
-      });
+      co(function *(){
+        var id = yield queue.push();
+        var res = client.zrank('list:test', id);
+        if(res) done();
+      })();
     });
 
     it('should set options into id hash fields', function(done) {
-      queue.push({
-        name: 'redis'
-      }, function(err, id) {
-        client.hgetall('list:test:' + id, function(err, res) {
-          if(res.name === 'redis') done();
+      co(function *(){
+        var id = yield queue.push({
+          name: 'redis'
         });
-      });
+        var res = client.hgetall('list:test', id);
+        if(res.name === 'redis') done();
+      })();
     });
     
   });
@@ -78,13 +84,13 @@ describe('list', function() {
   describe('get', function() {
 
     it('should return options if exists in list', function(done) {
-      queue.push({
-        name: 'bredele'
-      }, function(err, id) {
-        queue.get(id, function(err, data) {
-          if(!err && data.name === 'bredele') done();
+      co(function *(){
+        var id = yield queue.push({
+          name: 'bredele'
         });
-      });
+        var data = yield queue.get(id);
+        if(data.name === 'bredele') done();
+      })();
     });
 
   });
@@ -92,39 +98,34 @@ describe('list', function() {
   describe('del', function() {
     
     it('should remove set from list', function(done) {
-      // note: it could be great to extend mocha
-      // to avoir cascading, a test could depend of an 
-      // asynchronous result.
-      queue.push(function(err, id) {
-        queue.del(id, function(err) {
-          client.zrank('list:test', id, function(err, res) {
-            if(!res) done();
-          });
-        });
-      });
+      co(function *(){
+        var id = yield queue.push();
+        yield queue.del(id);
+        yield client.zrank('list:test', id);
+        done();
+      })();
     });
 
     it('should delete hash', function(done) {
-      queue.push({
-        name: 'hello'
-      }, function(err, id) {
-        queue.del(id, true, function(err) {
-          client.hgetall('list:test:' + id, function(err, res) {
-            if(!res) done();
-          });
+      co(function *(){
+        var id = yield queue.push({
+          name: 'hello'
         });
-      });
+        yield queue.del(id, true);
+        yield client.hgetall('list:test', id);
+        done();
+      })();
     });
   });
 
   describe('has', function() {
 
     it('should return true if exists', function(done) {
-      queue.push(function(err, id) {
-        queue.has(id, function(err, idx) {
-          if(idx) done();
-        });
-      });
+      co(function *(){
+        var id = yield queue.push();
+        yield queue.has(id);
+        done();
+      })();
     });
 
   });
@@ -134,17 +135,15 @@ describe('list', function() {
 
     it('should move set in other list', function(done) {
       var other = list('list:other');
-      queue.push(function(err, id) {
-        queue.move(id, other, function() {
-          queue.has(id, function(err, idx) {
-            if(!idx) {
-              other.has(id, function(err, idx) {
-                if(idx) done();
-              });
-            }
-          });
-        });
-      });
+      co(function *(){
+        var id = yield queue.push();
+        yield queue.move(id, other);
+        var idx = yield queue.has(id);
+        if(!idx) {
+          yield other.has(id);
+          done();
+        }
+      })();
     });
   
   });
